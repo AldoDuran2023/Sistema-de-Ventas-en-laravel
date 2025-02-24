@@ -27,7 +27,7 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h1>Dashboard</h1>
+            <h1>Pagina de inicio</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
