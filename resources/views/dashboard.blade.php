@@ -62,7 +62,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="{{ route('proveedores') }}" class="nav-link">
                                         <i class="fa-solid fa-phone"></i>
                                         <p>Proveedores</p>
                                     </a>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\ProveedoreController;
 use Illuminate\Support\Facades\Route;
 /*
 Route::get('/', function () {
@@ -26,4 +27,12 @@ Route::controller(CategoriaController::class)->group(function(){
     Route::post('/categorias/list', 'store'); 
     Route::put('/categorias/list/{id}', 'update'); 
     Route::delete('/categorias/list/{id}', 'destroy');
+});
+
+Route::controller(ProveedoreController::class)->group(function(){
+    Route::get('/proveedores','index')->name('proveedores'); 
+    Route::get('/proveedores/list', 'flecht');
+    Route::post('/proveedores/list', 'store'); 
+    Route::put('/proveedores/list/{id}', 'update');
+    Route::delete('/proveedores/list/{id}', 'destroy');
 });
