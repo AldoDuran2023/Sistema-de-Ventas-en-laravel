@@ -88,6 +88,8 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="{{ asset('js/modulos.js') }}"></script>
+
     <script>
         $(document).ready(function () {
             const proveedorModal = new bootstrap.Modal(document.getElementById('proveedorModal'));
@@ -161,31 +163,24 @@
             });
 
             // Evento para abrir el modal en modo edición
-            $('#tablaProveedor').on('click', '.edit-btn', function () {
-                isEditing = true;
-                proveedorId = $(this).data('id');
-                let nombre = $(this).data('nombre');
-                let telefono = $(this).data('telefono');
-                let direccion = $(this).data('direccion');
-                let correo = $(this).data('correo');
-                let imagen = $(this).data('imagen');
+            $('#tablaProveedor').on('click', '.edit-btn', function (event) {
 
-                $('#nombre').val(nombre);
-                $('#telefono').val(telefono);
-                $('#direccion').val(direccion);
-                $('#correo').val(correo);
+                // Definir las variables de datos
+                let dataVariables = {
+                    nombre: 'nombre',
+                    telefono: 'telefono',
+                    direccion: 'direccion',
+                    correo: 'correo'
+                };
+
+                // Llamar a la función y obtener el ID del proveedor
+                proveedorId = openEditModal(event, proveedorModal, dataVariables);
+                console.log("ID de proveedor seleccionado:", proveedorId);
                 
-                // Mostrar la imagen actual
+                // Manejo especial para la imagen
+                let imagen = $(this).data('imagen');
                 let imageUrl = imagen ? `/imagen/${imagen}` : `/imagen/default.png`;
                 $('#previewImagen').attr('src', imageUrl);
-                
-                // Cambiar el requisito de imagen para edición
-                $('#imagen').prop('required', false);
-                
-                // Actualizar el título del modal
-                $('#proveedorModalLabel').text('Editar Proveedor');
-                
-                proveedorModal.show();
             });
 
             // Evento para abrir el modal en modo creación

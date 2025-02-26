@@ -61,6 +61,8 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="{{ asset('js/modulos.js') }}"></script>
+
     <script>
         $(document).ready(function () {
             const categoriaModal = new bootstrap.Modal(document.getElementById('categoriaModal'));
@@ -100,55 +102,25 @@
             });
 
             // Evento para abrir el modal en modo edición
-            $('#tablaCategoria').on('click', '.edit-btn', function () {
-                categoriaId = $(this).data('id');
-                let categoriaNombre = $(this).data('nombre');
+            $('#tablaCategoria').on('click', '.edit-btn', function (event) {
 
-                $('#categoria').val(categoriaNombre);
-                categoriaModal.show(); // Corregido: era escuelaModal.show()
+                categoriaId = openEditModal(event, categoriaModal, {
+                    'categoria': 'nombre'
+                });
+                console.log("ID de marca seleccionada:", categoriaId);
             });
 
             // Enviar datos desde el modal
-            $('#categoriaForm').submit(function(e) { // Corregido: era $('#marcaModal').submit()
-                e.preventDefault();
-                let categoria_value = $('#categoria').val();
+            submitAjaxForm(
+                '#categoriaForm',         // Selector del formulario
+                categoriaModal,           // Objeto modal
+                table,                    // Objeto DataTable
+                '/categorias/list',       // URL base para la API
+                () => categoriaId,        // Función para obtener el ID (o variable directa)
+                { nombre_categoria: '#categoria' },  // Campos del formulario (clave -> selector)
+                { create: 'Categoría agregada correctamente', update: 'Categoría actualizada correctamente' } // Mensajes de éxito
+            );
 
-                // Vemos que tipo de petición se realiza
-                let url = categoriaId ? `/categorias/list/${categoriaId}` : `/categorias/list`; 
-                let method = categoriaId ? 'PUT' : 'POST';
-
-                let formData = {
-                    nombre_categoria: categoria_value,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                };
-
-                if(categoriaId){
-                    formData._method = 'PUT';
-                }
-
-                $.ajax({
-                    url: url,
-                    method: method,
-                    data: formData,
-                    success: function(response){
-                        $('#categoria').val('');
-                        categoriaModal.hide();
-                        $('.modal-backdrop').remove();
-                        table.ajax.reload();
-                        Toast.fire({
-                            icon: 'success',
-                            title: categoriaId ? 'Categoria actualizada correctamente' : 'Categoria agregada correctamente'
-                        });
-                        categoriaId = null;
-                    },
-                    error: function(xhr){
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Error al guardar la Categoria'
-                        });
-                    }
-                });
-            });
 
             // Limpiar el formulario cuando se cierra el modal
             $('#categoriaModal').on('hidden.bs.modal', function () {
@@ -157,44 +129,14 @@
             });
 
             // Falta implementar el botón eliminar
-            $('#tablaCategoria').on('click', '.delete-btn', function() {
-                let id = $(this).data('id');
-                
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "Esta acción no se puede revertir",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/categorias/list/${id}`,
-                            method: 'DELETE',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                _method: 'DELETE'
-                            },
-                            success: function() {
-                                table.ajax.reload();
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Categoria eliminada correctamente'
-                                });
-                            },
-                            error: function() {
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: 'Error al eliminar la Categoria'
-                                });
-                            }
-                        });
-                    }
-                });
-            });
+            deleteEntity(
+                table,
+                '#tablaCategoria',
+                '.delete-btn',
+                '/categorias/list',
+                'Categoria eliminada correctamente', 
+                'Error al eliminar la categoria'
+            );
         });
     </script>
 

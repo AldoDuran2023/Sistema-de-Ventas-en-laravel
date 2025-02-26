@@ -61,17 +61,11 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="{{ asset('js/modulos.js') }}"></script>
+
     <script>
         $(document).ready(function () {
             const marcaModal = new bootstrap.Modal(document.getElementById('marcaModal'));
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
 
             // Variable para saber el id
             let marcaId = null;
@@ -82,7 +76,7 @@
                 ajax: {
                     url: '/marcas/list',
                     type: 'GET',
-                    dataSrc: 'data', // Indica que los datos están dentro de la clave "data"
+                    dataSrc: 'data', 
                 },
                 columns: [
                     {data: 'id', title: 'id'},
@@ -100,57 +94,25 @@
                 ]
             });
 
-            // Evento para abrir el modal en modo edición
-            $('#tablaMarca').on('click', '.edit-btn', function () {
-                marcaId = $(this).data('id');
-                let marcaNombre = $(this).data('nombre');
-
-                $('#marca').val(marcaNombre);
-                marcaModal.show(); // Corregido: era escuelaModal.show()
+            $('#tablaMarca').on('click', '.edit-btn', function (event) {
+                // Llamamos a la función y obtenemos el ID
+                marcaId = openEditModal(event, marcaModal, {
+                    'marca': 'nombre'
+                });
+                console.log("ID de marca seleccionada:", marcaId);
             });
 
             // Enviar datos desde el modal
-            $('#marcaForm').submit(function(e) { // Corregido: era $('#marcaModal').submit()
-                e.preventDefault();
-                let marca_value = $('#marca').val();
 
-                // Vemos que tipo de petición se realiza
-                let url = marcaId ? `/marcas/list/${marcaId}` : `/marcas/list`; // Corregido: reemplazado {id} con marcaId
-                let method = marcaId ? 'PUT' : 'POST';
-
-                let formData = {
-                    nombre_marca: marca_value,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                };
-
-                if(marcaId){
-                    formData._method = 'PUT';
-                }
-
-                $.ajax({
-                    url: url,
-                    method: method,
-                    data: formData,
-                    success: function(response){
-                        $('#marca').val('');
-                        marcaModal.hide();
-                        $('.modal-backdrop').remove();
-                        table.ajax.reload();
-                        Toast.fire({
-                            icon: 'success',
-                            title: marcaId ? 'Marca actualizada correctamente' : 'Marca agregada correctamente'
-                            // Corregido: era marca ? ... pero debe ser marcaId ?
-                        });
-                        marcaId = null;
-                    },
-                    error: function(xhr){
-                        Toast.fire({
-                            icon: 'error',
-                            title: 'Error al guardar la Marca'
-                        });
-                    }
-                });
-            });
+            submitAjaxForm(
+                '#marcaForm',         // Selector del formulario
+                marcaModal,           // Objeto del modal
+                table,                // Objeto DataTable
+                '/marcas/list',       // URL base
+                () => marcaId,        // Función que devuelve el ID actual
+                { nombre_marca: '#marca' }, // Campos dinámicos { campo: selector }
+                { create: 'Marca agregada correctamente', update: 'Marca actualizada correctamente' } // Mensajes de éxito
+            );
 
             // Limpiar el formulario cuando se cierra el modal
             $('#marcaModal').on('hidden.bs.modal', function () {
@@ -159,45 +121,17 @@
             });
 
             // Falta implementar el botón eliminar
-            $('#tablaMarca').on('click', '.delete-btn', function() {
-                let id = $(this).data('id');
-                
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "Esta acción no se puede revertir",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/marca/list/${id}`,
-                            method: 'DELETE',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content'),
-                                _method: 'DELETE'
-                            },
-                            success: function() {
-                                table.ajax.reload();
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Marca eliminada correctamente'
-                                });
-                            },
-                            error: function() {
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: 'Error al eliminar la marca'
-                                });
-                            }
-                        });
-                    }
-                });
-            });
+            deleteEntity(
+                table,          // La instancia de DataTables
+                '#tablaMarca',       // Selector de la tabla
+                '.delete-btn',       // Botón de eliminación
+                '/marcas/list',      // URL base para eliminar
+                'Marca eliminada correctamente',  // Mensaje de éxito
+                'Error al eliminar la marca'      // Mensaje de error
+            );
+
         });
+        
     </script>
 
 
