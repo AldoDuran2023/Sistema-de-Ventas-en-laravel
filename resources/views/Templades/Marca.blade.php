@@ -102,6 +102,8 @@
                 console.log("ID de marca seleccionada:", marcaId);
             });
 
+            
+
             // Enviar datos desde el modal
 
             submitAjaxForm(

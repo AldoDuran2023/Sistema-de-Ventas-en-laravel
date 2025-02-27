@@ -104,7 +104,6 @@
 
             // Variable para almacenar el ID del proveedor
             let proveedorId = null;
-            let isEditing = false;
 
             // Inicializar DataTable
             let table = $('#tablaProveedor').DataTable({
@@ -163,6 +162,21 @@
             });
 
             // Evento para abrir el modal en modo edición
+            /* openEditModalWithImage(
+                '#tablaProveedor',
+                '.edit-btn',
+                proveedorModal,
+                {
+                    nombre: 'nombre',
+                    telefono: 'telefono',
+                    direccion: 'direccion',
+                    correo: 'correo'
+                },
+                'imagen',
+                '/imagen',
+                '/imagen/default.png',
+                'previewImagen'
+            ); */
             $('#tablaProveedor').on('click', '.edit-btn', function (event) {
 
                 // Definir las variables de datos
@@ -176,22 +190,14 @@
                 // Llamar a la función y obtener el ID del proveedor
                 proveedorId = openEditModal(event, proveedorModal, dataVariables);
                 console.log("ID de proveedor seleccionado:", proveedorId);
-                
-                // Manejo especial para la imagen
+                updateImagePreview(this, 'imagen', '/imagen', '/imagen/default.png', 'previewImagen');
+
+                /* // Manejo especial para la imagen
                 let imagen = $(this).data('imagen');
                 let imageUrl = imagen ? `/imagen/${imagen}` : `/imagen/default.png`;
-                $('#previewImagen').attr('src', imageUrl);
+                $('#previewImagen').attr('src', imageUrl); */
             });
 
-            // Evento para abrir el modal en modo creación
-            $('[data-bs-target="#proveedorModal"]').on('click', function() {
-                isEditing = false;
-                proveedorId = null;
-                $('#proveedorForm')[0].reset();
-                $('#previewImagen').attr('src', '');
-                $('#imagen').prop('required', false);
-                $('#proveedorModalLabel').text('Datos del Proveedor');
-            });
 
             // Evento para manejar el envío del formulario
             $('#proveedorForm').submit(function (e) {
@@ -250,53 +256,18 @@
                 $('#proveedorForm')[0].reset();
                 $('#previewImagen').attr('src', '');
                 proveedorId = null;
-                isEditing = false;
                 $('#imagen').prop('required', true);
             });
 
             // Implementación del botón eliminar (corregido para usar la clase correcta)
-            $('#tablaProveedor').on('click', '.delete-btn', function () {
-                let id = $(this).data('id');
-
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "Esta acción no se puede revertir",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/proveedores/list/${id}`,
-                            method: 'DELETE',
-                            data: {
-                                _token: $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function () {
-                                table.ajax.reload();
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: 'Proveedor eliminado correctamente'
-                                });
-                            },
-                            error: function (xhr) {
-                                let errorMessage = 'Error al eliminar el proveedor';
-                                if (xhr.responseJSON && xhr.responseJSON.message) {
-                                    errorMessage = xhr.responseJSON.message;
-                                }
-                                
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: errorMessage
-                                });
-                            }
-                        });
-                    }
-                });
-            });
+            deleteEntity(
+                table,
+                '#tablaProveedor',
+                '.delete-btn',
+                '/proveedores/list',
+                'Proveedor eliminado exitosamente',
+                'Error al eliminar proveedor'
+            );
         });
     </script>
 

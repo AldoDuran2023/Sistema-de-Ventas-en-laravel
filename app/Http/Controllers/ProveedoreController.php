@@ -9,11 +9,10 @@ use Illuminate\Support\Facades\File;
 class ProveedoreController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra la vista principal del proveedor.
      */
     public function index()
     {
-        //
         return view('templades.proveedor');
     }
 
@@ -26,58 +25,32 @@ class ProveedoreController extends Controller
     }
 
     /**
-     * Recuperar datos en tipo json.
+     * Recuperar datos en tipo JSON.
      */
     public function flecht()
     {
-        //
         $proveedor = Proveedore::all();
         return response()->json([
-            'success', true,
-            'message'=>'recuperacion exitosa',
-            'data'=>$proveedor
+            'success' => true,
+            'message' => 'Recuperación exitosa',
+            'data' => $proveedor
         ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo proveedor en la base de datos.
      */
     public function store(Request $request)
     {
-        //
-        $request->validate([
-            'nombre'=> 'required|string|max:255|',
-            'imagen'=>'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'telefono'=> 'required|string|max:9|unique:Proveedores,telefono',
-            'direccion'=> 'required|string|max:255',
-            'correo'=> 'required|string|max:255|unique:Proveedores,correo'
-        ]);
-
-        // Preparar los datos del proveedor
-        $proveedorData = [
-            'nombre' => $request->nombre,
-            'telefono' => $request->telefono,
-            'direccion' => $request->direccion,
-            'correo' => $request->correo
-        ];
-
-        // Manejo de imagen
-        if($imagen = $request->file('imagen')){
-            $rutaGuardarImagen = 'imagen/';
-            $imagenProveedor = date('YmdHis') . "_" . uniqid() . "." . $imagen->getClientOriginalExtension();
-            $imagen->move($rutaGuardarImagen, $imagenProveedor);
-            $proveedorData['imagen'] = $imagenProveedor;
-        }
+        $proveedorData = $this->validarYPrepararDatos($request);
 
         $proveedor = Proveedore::create($proveedorData);
 
         return response()->json([
-            'success'=> true,
-            'message'=> 'creacion de proveedor con exito',
-            'data'=> $proveedor
+            'success' => true,
+            'message' => 'Creación de proveedor con éxito',
+            'data' => $proveedor
         ]);
-
-
     }
 
     /**
@@ -97,37 +70,14 @@ class ProveedoreController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un proveedor existente.
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, $id)
     {
-        //
-        $request->validate([
-            'nombre' => 'required|string|max:255,'.$id,
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048,'.$id,
-            'telefono' => 'required|string|max:9,'.$id,
-            'direccion' => 'required|string|max:255,'.$id,
-            'correo' => 'required|email|max:255,'.$id,
-        ]);
-
         $proveedore = Proveedore::findOrFail($id);
+        $proveedorData = $this->validarYPrepararDatos($request, $id, $proveedore);
 
-        if ($request->hasFile('imagen')) {
-            if ($proveedore->imagen && $proveedore->imagen !== 'default.png') {
-                $oldImagePath = public_path('imagen/' . $proveedore->imagen);
-                if (File::exists($oldImagePath)) {
-                    File::delete($oldImagePath);
-                }
-            }
-
-            $imagen = $request->file('imagen');
-            $rutaGuardarImagen = 'imagen/';
-            $imagenProveedor = date('YmdHis') . "_" . uniqid() . "." . $imagen->getClientOriginalExtension();
-            $imagen->move(public_path($rutaGuardarImagen), $imagenProveedor);
-            $proveedore->imagen = $imagenProveedor;
-        }
-
-        $proveedore->update($request->only(['nombre', 'telefono', 'direccion', 'correo']));
+        $proveedore->update($proveedorData);
 
         return response()->json([
             'success' => true,
@@ -137,20 +87,13 @@ class ProveedoreController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un proveedor y su imagen si existe.
      */
     public function destroy($id)
     {
-        //
-        // Buscar el proveedor por ID
         $proveedore = Proveedore::findOrFail($id);
 
-        if ($proveedore->imagen && $proveedore->imagen !== 'default.png') {
-            $imagePath = public_path('imagen/' . $proveedore->imagen);
-            if (File::exists($imagePath)) {
-                File::delete($imagePath);
-            }
-        }
+        $this->eliminarImagen($proveedore->imagen);
 
         $proveedore->delete();
 
@@ -158,5 +101,55 @@ class ProveedoreController extends Controller
             'success' => true,
             'message' => 'Proveedor eliminado con éxito'
         ]);
+    }
+
+    /**
+     * Valida y prepara los datos del proveedor.
+     */
+    private function validarYPrepararDatos(Request $request, $id = null, $proveedore = null)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'telefono' => 'required|string|max:9|unique:proveedores,telefono' . ($id ? ",$id" : ""),
+            'direccion' => 'required|string|max:255',
+            'correo' => 'required|string|email|max:255|unique:proveedores,correo' . ($id ? ",$id" : "")
+        ]);
+
+        $proveedorData = $request->only(['nombre', 'telefono', 'direccion', 'correo']);
+
+        if ($request->hasFile('imagen')) {
+            if ($proveedore) {
+                $this->eliminarImagen($proveedore->imagen);
+            }
+            $proveedorData['imagen'] = $this->guardarImagen($request->file('imagen'));
+        }
+
+        return $proveedorData;
+    }
+
+    /**
+     * Guarda la imagen y devuelve su nombre.
+     */
+    private function guardarImagen($imagen)
+    {
+        $rutaGuardarImagen = 'imagen/';
+        $nombreImagen = date('YmdHis') . "_" . uniqid() . "." . $imagen->getClientOriginalExtension();
+        $imagen->move(public_path($rutaGuardarImagen), $nombreImagen);
+
+        return $nombreImagen;
+    }
+
+    /**
+     * Elimina una imagen si existe y no es la predeterminada.
+     */
+    private function eliminarImagen($imagen)
+    {
+        if ($imagen && $imagen !== 'default.png') {
+            $imagePath = public_path('imagen/' . $imagen);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+        }
     }
 }

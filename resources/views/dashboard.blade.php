@@ -46,7 +46,7 @@
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                                 <i class="fa-solid fa-list-check"></i>
-                                <p>Gestion<i class="right fas fa-angle-left"></i></p>
+                                <p>Administrador<i class="right fas fa-angle-left"></i></p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
@@ -65,6 +65,12 @@
                                     <a href="{{ route('proveedores') }}" class="nav-link">
                                         <i class="fa-solid fa-phone"></i>
                                         <p>Proveedores</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('productos') }}" class="nav-link">
+                                        <i class="fa-solid fa-barcode"></i>
+                                        <p>Productos</p>
                                     </a>
                                 </li>
                             </ul>

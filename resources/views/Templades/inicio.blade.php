@@ -103,13 +103,13 @@
             <div class="card bg-danger text-white h-100">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="display-4 fw-bold">0</h3>
-                        <p class="mb-0">Productos</p>
+                        <h3 class="display-4 fw-bold">{{ $totalProductos }}</h3>
+                        <p class="mb-0">Productos registrados</p>
                     </div>
                     <i class="fa-solid fa-box fa-3x opacity-50"></i>
                 </div>
                 <div class="card-footer bg-danger-dark d-flex justify-content-between align-items-center">
-                    <a href="#" class="text-white text-decoration-none">
+                    <a href="{{ route('productos') }}" class="text-white text-decoration-none">
                         Ver detalles
                     </a>
                     <i class="fa-solid fa-circle-arrow-right"></i>
