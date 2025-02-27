@@ -46,7 +46,7 @@ function submitAjaxForm(formSelector, modalObject, tableObject, urlBase, getEnti
             method: method,
             data: formData,
             success: function(response) {
-                console.log("✅ Respuesta del servidor:", response);
+                console.log("Respuesta del servidor:", response);
 
                 // Limpiar formulario y cerrar modal
                 $(formSelector)[0].reset();
@@ -75,7 +75,7 @@ function submitAjaxForm(formSelector, modalObject, tableObject, urlBase, getEnti
                 }
             },
             error: function(xhr) {
-                console.log("❌ Error en la petición:", xhr.responseJSON);
+                console.log("Error en la petición:", xhr.responseJSON);
 
                 Toast.fire({
                     icon: 'error',
@@ -109,7 +109,7 @@ function submitAjaxFormFile(formSelector, modalObject, tableObject, urlBase, get
             processData: false, // Necesario para FormData
             contentType: false, // Necesario para FormData
             success: function(response) {
-                console.log("✅ Respuesta del servidor:", response);
+                console.log("Respuesta del servidor:", response);
                 $(formSelector)[0].reset();
                 modalObject.hide();
                 $('.modal-backdrop').remove();
@@ -135,7 +135,7 @@ function submitAjaxFormFile(formSelector, modalObject, tableObject, urlBase, get
                 }
             },
             error: function(xhr) {
-                console.log("❌ Error en la petición:", xhr.responseJSON);
+                console.log("Error en la petición:", xhr.responseJSON);
 
                 Toast.fire({
                     icon: 'error',
