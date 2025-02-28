@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
 
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
@@ -27,6 +28,24 @@
                     <a class="nav-link" data-widget="pushmenu" href="/"><i class="fas fa-bars"></i></a>
                 </li>
             </ul>
+            <ul class="navbar-nav ms-auto me-3">
+                <!-- Usuario Logueado -->
+                @auth
+                    <li class="nav-item d-flex align-items-center me-3">
+                        <div class="d-flex align-items-center bg-light px-3 py-2 rounded shadow-sm">
+                            <i class="fas fa-user-circle fa-lg me-2 text-primary"></i>
+                            <h6 class="mb-0 text-dark fw-bold">Hola, {{ Auth::user()->name }}</h6>
+                        </div>
+                    </li>
+                @endauth
+
+                <!-- Botón de Cerrar Sesión -->
+                <li class="nav-item">
+                    <a href="{{ route('logout') }}" class="btn btn-outline-danger d-flex align-items-center">
+                        <i class="fas fa-sign-out-alt me-2"></i> Salir
+                    </a>
+                </li>
+            </ul>
         </nav>
         
         <!-- Sidebar -->
@@ -43,80 +62,88 @@
                                 <p>Inicio</p>
                             </a>
                         </li>
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                                <i class="fa-solid fa-list-check"></i>
-                                <p>Administrador<i class="right fas fa-angle-left"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('categorias') }}" class="nav-link">
-                                        <i class="fa-solid fa-leaf"></i>
-                                        <p>Categorias</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('marcas') }}" class="nav-link">
-                                        <i class="fa-solid fa-tag"></i>
-                                        <p>Marcas</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('productos') }}" class="nav-link">
-                                        <i class="fa-solid fa-barcode"></i>
-                                        <p>Productos</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                <p>Ventas<i class="right fas fa-angle-left"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('ventas') }}" class="nav-link">
-                                        <i class="fa-solid fa-basket-shopping"></i>
-                                        <p>registrar</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                                <i class="fa-solid fa-shop"></i>
-                                <p>Compras<i class="right fas fa-angle-left"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('proveedores') }}" class="nav-link">
-                                        <i class="fa-solid fa-phone"></i>
-                                        <p>Proveedores</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('compras') }}" class="nav-link">
-                                        <i class="fa-solid fa-truck"></i>
-                                        <p>Pedidos</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                                <i class="fa-solid fa-folder-open"></i>
-                                <p>Reportes<i class="right fas fa-angle-left"></i></p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="{{ route('reporte.diario') }}" target="_blank" class="nav-link">
-                                        <i class="fa-solid fa-file"></i>
-                                        <p>Ventas del dia</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        
+                        @auth
+                            @if(Auth::user()->rol == 'admin')
+                            <!-- MENÚ SÓLO PARA ADMINISTRADORES -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="fa-solid fa-list-check"></i>
+                                    <p>Administrador<i class="right fas fa-angle-left"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('categorias') }}" class="nav-link">
+                                            <i class="fa-solid fa-leaf"></i>
+                                            <p>Categorias</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('marcas') }}" class="nav-link">
+                                            <i class="fa-solid fa-tag"></i>
+                                            <p>Marcas</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('productos') }}" class="nav-link">
+                                            <i class="fa-solid fa-barcode"></i>
+                                            <p>Productos</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="fa-solid fa-shop"></i>
+                                    <p>Compras<i class="right fas fa-angle-left"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('proveedores') }}" class="nav-link">
+                                            <i class="fa-solid fa-phone"></i>
+                                            <p>Proveedores</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('compras') }}" class="nav-link">
+                                            <i class="fa-solid fa-truck"></i>
+                                            <p>Pedidos</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                    <p>Reportes<i class="right fas fa-angle-left"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('reporte.diario') }}" target="_blank" class="nav-link">
+                                            <i class="fa-solid fa-file"></i>
+                                            <p>Ventas del dia</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            @endif
+                            
+                            <!-- MENÚ PARA TODOS LOS USUARIOS -->
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                    <p>Ventas<i class="right fas fa-angle-left"></i></p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ route('ventas') }}" class="nav-link">
+                                            <i class="fa-solid fa-basket-shopping"></i>
+                                            <p>registrar</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endauth
                     </ul>
                 </nav>
             </div>

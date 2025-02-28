@@ -7,6 +7,8 @@ use App\Models\Producto;
 use App\Models\Proveedore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
 
 class CompraController extends Controller
 {
@@ -19,6 +21,20 @@ class CompraController extends Controller
         $proveedores = Proveedore::all();
         $productos = Producto::all();
         return view('templades.compra', compact('proveedores','productos'));
+    }
+
+    public function __construct()
+    {
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user(); 
+
+            if (!$user || $user->rol !== 'admin') {
+                return redirect()->route('home')->with('error', 'Acceso no autorizado');
+            }
+
+            return $next($request);
+        });
     }
 
     /**

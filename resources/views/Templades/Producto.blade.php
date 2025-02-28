@@ -80,8 +80,6 @@
                                 <input type="number" step="0.01" class="form-control" id="precio_venta" name="precio_venta" placeholder="Ingrese el precio de venta unitaria" min="0.01">
                             </div>                      
                             <div class="col">
-                                <label for="stock" class="form-label">Stock</label>
-                                <input type="number" class="form-control" id="stock" name="stock" placeholder="Ingrese el stock" min="0">
                             </div>
                         </div> <br>
                         <div class="row">

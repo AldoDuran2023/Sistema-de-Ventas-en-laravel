@@ -7,6 +7,8 @@ use App\Models\marca;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
 
 
 class ProductoController extends Controller
@@ -20,6 +22,20 @@ class ProductoController extends Controller
         $marcas = Marca::all();
         $categorias = Categoria::all();
         return view('templades.producto', compact('marcas','categorias'));
+    }
+
+    public function __construct()
+    {
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user(); 
+
+            if (!$user || $user->rol !== 'admin') {
+                return redirect()->route('home')->with('error', 'Acceso no autorizado');
+            }
+
+            return $next($request);
+        });
     }
 
     /**
@@ -122,7 +138,6 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:100|unique:productos,nombre' . ($id ? ",$id" : ""),
             'descripcion' => 'nullable|string',
             'precio_venta' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'marca' => 'required|exists:marcas,id|integer',
             'categoria' => 'required|integer|exists:categorias,id'
@@ -132,7 +147,6 @@ class ProductoController extends Controller
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
             'precio_venta' => $request->precio_venta,
-            'stock' => $request->stock,
             'id_marca' => $request->marca,
             'id_categoria' => $request->categoria,
         ];

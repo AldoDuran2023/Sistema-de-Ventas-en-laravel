@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Proveedore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
 
 class ProveedoreController extends Controller
 {
@@ -14,6 +16,20 @@ class ProveedoreController extends Controller
     public function index()
     {
         return view('templades.proveedor');
+    }
+
+    public function __construct()
+    {
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user(); 
+
+            if (!$user || $user->rol !== 'admin') {
+                return redirect()->route('home')->with('error', 'Acceso no autorizado');
+            }
+
+            return $next($request);
+        });
     }
 
     /**

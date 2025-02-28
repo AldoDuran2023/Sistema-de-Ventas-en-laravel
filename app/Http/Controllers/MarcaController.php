@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\marca;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller; // Asegurar que se importa esta clase
+use Illuminate\Support\Facades\Auth;
 
 class MarcaController extends Controller
 {
@@ -14,6 +16,20 @@ class MarcaController extends Controller
     {
         //
         return view('templades.marca');
+    }
+
+    public function __construct()
+    {
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user(); 
+
+            if (!$user || $user->rol !== 'admin') {
+                return redirect()->route('home')->with('error', 'Acceso no autorizado');
+            }
+
+            return $next($request);
+        });
     }
 
     /**

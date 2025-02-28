@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\categoria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controller;
 
 class CategoriaController extends Controller
 {
@@ -14,6 +16,20 @@ class CategoriaController extends Controller
     {
         //
         return view('templades.categoria');
+    }
+
+    public function __construct()
+    {
+
+        $this->middleware(function ($request, $next) {
+            $user = Auth::user(); 
+
+            if (!$user || $user->rol !== 'admin') {
+                return redirect()->route('home')->with('error', 'Acceso no autorizado');
+            }
+
+            return $next($request);
+        });
     }
 
     /**

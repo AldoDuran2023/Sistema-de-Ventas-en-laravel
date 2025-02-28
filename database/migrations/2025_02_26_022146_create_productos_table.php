@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('descripcion');
             $table->decimal('precio_venta', 10, 2);
             $table->integer('stock')->default(0);
-            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
+            $table->enum('estado', ['activo', 'inactivo'])->default('inactivo');
             $table->string('imagen', 255)->nullable();
             $table->foreignId('id_marca')->constrained('marcas')->onDelete('restrict');
             $table->foreignId('id_categoria')->constrained('categorias')->onDelete('restrict');
