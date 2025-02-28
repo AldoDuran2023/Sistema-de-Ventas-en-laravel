@@ -63,6 +63,7 @@
 
     <script src="{{ asset('js/modulos.js') }}"></script>
 
+
     <script>
         $(document).ready(function () {
             const marcaModal = new bootstrap.Modal(document.getElementById('marcaModal'));
@@ -122,7 +123,7 @@
                 marcaId = null;
             });
 
-            // Falta implementar el botón eliminar
+            // implementar el botón eliminar
             deleteEntity(
                 table,          // La instancia de DataTables
                 '#tablaMarca',       // Selector de la tabla

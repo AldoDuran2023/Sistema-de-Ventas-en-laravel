@@ -62,12 +62,6 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ route('proveedores') }}" class="nav-link">
-                                        <i class="fa-solid fa-phone"></i>
-                                        <p>Proveedores</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a href="{{ route('productos') }}" class="nav-link">
                                         <i class="fa-solid fa-barcode"></i>
                                         <p>Productos</p>
@@ -82,7 +76,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="{{ route('ventas') }}" class="nav-link">
                                         <i class="fa-solid fa-basket-shopping"></i>
                                         <p>registrar</p>
                                     </a>
@@ -96,7 +90,13 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="{{ route('proveedores') }}" class="nav-link">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <p>Proveedores</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('compras') }}" class="nav-link">
                                         <i class="fa-solid fa-truck"></i>
                                         <p>Pedidos</p>
                                     </a>
@@ -110,7 +110,7 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link">
+                                    <a href="{{ route('reporte.diario') }}" target="_blank" class="nav-link">
                                         <i class="fa-solid fa-file"></i>
                                         <p>Ventas del dia</p>
                                     </a>
@@ -138,7 +138,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @yield('js')
 </body>

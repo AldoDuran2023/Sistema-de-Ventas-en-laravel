@@ -81,7 +81,7 @@
                             </div>                      
                             <div class="col">
                                 <label for="stock" class="form-label">Stock</label>
-                                <input type="number" class="form-control" id="stock" name="stock" placeholder="Ingrese el stock" min="1">
+                                <input type="number" class="form-control" id="stock" name="stock" placeholder="Ingrese el stock" min="0">
                             </div>
                         </div> <br>
                         <div class="row">

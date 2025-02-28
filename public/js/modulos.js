@@ -1,3 +1,11 @@
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
+
 function openEditModal(event, modalObject, dataVariables) {
     const btn = $(event.currentTarget);// Obtenemos el botón que disparó el evento
     const id = btn.data('id');// Capturamos el ID
@@ -150,6 +158,7 @@ function submitAjaxFormFile(formSelector, modalObject, tableObject, urlBase, get
 function deleteEntity(tableInstance, tableSelector, buttonSelector, urlBase, successMessage, errorMessage) {
     $(tableSelector).on('click', buttonSelector, function() {
         let id = $(this).data('id');
+        console.log(`Intentando eliminar: ${urlBase}/${id}`);
 
         Swal.fire({
             title: '¿Estás seguro?',
@@ -205,6 +214,44 @@ function updateSelect(selectId, value) {
     } else {
         console.error(`updateSelect: No se encontró el select con id "${selectId}"`);
     }
+}
+
+function Finalizar(url, urlRedireccion, tituloExito, mensajeExito, tituloError, mensajeError, tituloConfirmacion, mensajeConfirmacion, datosExtra = {}) {
+    Swal.fire({
+        title: tituloConfirmacion,
+        text: mensajeConfirmacion,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, finalizar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let data = {
+                _token: $('input[name="_token"]').val(),
+                ...datosExtra 
+            };
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire(tituloExito, mensajeExito, 'success')
+                            .then(() => {
+                                window.location.href = urlRedireccion;
+                            });
+                    } else {
+                        Swal.fire(tituloError, mensajeError, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire(tituloError, 'Error al procesar la solicitud', 'error');
+                }
+            });
+        }
+    });
 }
 
 
