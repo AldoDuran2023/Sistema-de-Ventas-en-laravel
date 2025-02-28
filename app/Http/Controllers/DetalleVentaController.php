@@ -6,6 +6,7 @@ use App\Models\Detalle_Venta;
 use App\Models\Producto;
 use App\Models\Venta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DetalleVentaController extends Controller
 {
@@ -60,30 +61,72 @@ class DetalleVentaController extends Controller
             'precio' => 'required|numeric|min:0',
         ]);
 
-        // Verificar stock
-        $producto = Producto::find($request->producto);
-        if ($producto->stock < $request->cantidad) {
+        // Iniciar transacción
+        DB::beginTransaction();
+
+        try {
+            // Bloquear el producto para actualización (FOR UPDATE)
+            $producto = Producto::select('*')
+                        ->where('id', $request->producto)
+                        ->lockForUpdate()
+                        ->first();
+            
+            if (!$producto) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Producto no encontrado'
+                ], 404);
+            }
+
+            // Verificar stock
+            if ($producto->stock < $request->cantidad) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No hay suficiente stock disponible'
+                ]);
+            }
+
+            // Crear detalle de venta
+            $detalle = Detalle_Venta::create([
+                'id_venta' => $request->idventa,
+                'id_producto' => $request->producto,
+                'cantidad' => $request->cantidad,
+                'precio_unitario' => $request->precio,
+            ]);
+
+            // Actualizar el stock del producto
+            $producto->stock -= $request->cantidad;
+            
+            // Si el stock llega a cero, cambiar estado a inactivo
+            if ($producto->stock <= 0) {
+                $producto->estado = 'inactivo';
+            }
+            
+            $producto->save();
+            
+            // Actualizar el total de la venta
+            $venta = Venta::findOrFail($request->idventa);
+            $venta->total = $venta->detalles->sum(function($detalle) {
+                return $detalle->cantidad * $detalle->precio_unitario;
+            });
+            $venta->save();
+            
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Se añadió correctamente el producto',
+                'total' => $venta->total
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'No hay suficiente stock disponible'
-            ]);
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $detalle = Detalle_Venta::create([
-            'id_venta' => $request->idventa,
-            'id_producto' => $request->producto,
-            'cantidad' => $request->cantidad,
-            'precio_unitario' => $request->precio,
-        ]);
-
-        // Actualizar el stock del producto
-        $producto->stock -= $request->cantidad;
-        $producto->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Se añadió correctamente el producto'
-        ]);
     }
 
     /**
@@ -115,21 +158,55 @@ class DetalleVentaController extends Controller
      */
     public function destroy($id)
     {
+        DB::beginTransaction();
+
         try {
             $detalle = Detalle_Venta::findOrFail($id);
+            $idVenta = $detalle->id_venta;
+            
+            // Bloquear el producto para actualización
+            $producto = Producto::select('*')
+                        ->where('id', $detalle->id_producto)
+                        ->lockForUpdate()
+                        ->first();
+            
+            if (!$producto) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Producto no encontrado'
+                ], 404);
+            }
             
             // Restaurar el stock
-            $producto = Producto::find($detalle->id_producto);
             $producto->stock += $detalle->cantidad;
+            
+            // Si el producto estaba inactivo por falta de stock y ahora tiene stock, activarlo
+            if ($producto->estado == 'inactivo' && $producto->stock > 0) {
+                $producto->estado = 'activo';
+            }
+            
             $producto->save();
             
+            // Eliminar el detalle
             $detalle->delete();
+            
+            // Actualizar el total de la venta
+            $venta = Venta::findOrFail($idVenta);
+            $venta->total = $venta->detalles->sum(function($detalle) {
+                return $detalle->cantidad * $detalle->precio_unitario;
+            });
+            $venta->save();
+            
+            DB::commit();
             
             return response()->json([
                 'success' => true,
-                'message' => 'Producto eliminado de la venta'
+                'message' => 'Producto eliminado de la venta',
+                'total' => $venta->total
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()

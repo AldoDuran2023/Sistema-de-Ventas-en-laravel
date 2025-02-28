@@ -49,7 +49,7 @@
                                 <td>{{ $venta->fecha }}</td>
                                 <td class="text-end">{{ number_format($venta->total, 2) }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('boleta', $venta->id) }}" class="btn btn-info btn-sm">Ver Boleta</a>
+                                    <a href="{{ url('/ventas/boleta/' . $venta->id) }}" class="btn btn-info btn-sm">Ver Boleta</a>
                                 </td>
                             </tr>
                         @endforeach

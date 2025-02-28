@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\compra;
 use App\Models\detalle_compra;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,22 +31,31 @@ class DetalleCompraController extends Controller
      */
     public function store(Request $request)
     {
-        // 
         $compra = Compra::find($request->id_compra);
         if (!$compra) {
             return response()->json(['error' => 'Compra no encontrada'], 404);
-        };
+        }
+        
         foreach ($request->productos as $producto) {
+            // Crear el detalle de compra
             Detalle_compra::create([
                 'id_compra' => $compra->id,
                 'id_producto' => $producto['id'],
                 'cantidad' => $producto['cantidad'],
                 'precio_compra' => $producto['precio']
             ]);
-        };
+
+            // Actualizar stock del producto
+            $productoModel = Producto::find($producto['id']);
+            if ($productoModel) {
+                $productoModel->stock += $producto['cantidad'];
+                $productoModel->estado = $productoModel->stock > 0 ? 'activo' : 'inactivo';
+                $productoModel->save();
+            }
+        }
         
         // Calcular el total de la compra
-        $compra->total = detalle_compra::where('id_compra', $compra->id)->sum(DB::raw('cantidad * precio_compra'));
+        $compra->total = Detalle_compra::where('id_compra', $compra->id)->sum(DB::raw('cantidad * precio_compra'));
         $compra->save();
 
         return response()->json(['success' => 'Productos guardados correctamente']);
