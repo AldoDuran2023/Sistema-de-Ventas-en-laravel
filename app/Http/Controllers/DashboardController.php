@@ -12,8 +12,9 @@ class DashboardController extends Controller
         $totalMarcas = \App\Models\Marca::count();
         $totalCategorias = \App\Models\Categoria::count();
         $totalProductos = \App\Models\Producto::count();
+        $totalUsuarios = \App\Models\User::count();
         
-        return view('templades.inicio', compact('totalMarcas', 'totalCategorias','totalProductos'));
+        return view('templades.inicio', compact('totalMarcas', 'totalCategorias','totalProductos', 'totalUsuarios'));
 
     }
 

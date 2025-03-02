@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MarcaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedoreController;
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use App\Models\Detalle_Venta;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,15 @@ Route::middleware(['auth'])->group(function() {
         Route::post('/marcas/list', 'store'); 
         Route::put('/marcas/list/{id}', 'update'); 
         Route::delete('/marcas/list/{id}', 'destroy');
+    });
+
+    // Rutas de usuarios
+    Route::controller(UsuarioController::class)->group(function(){
+        Route::get('/usuarios','index')->name('usuarios');
+        Route::get('/usuarios/list', 'list_user');
+        Route::post('/usuarios/list', 'store'); 
+        Route::put('/marcas/list/{id}', 'update'); 
+        Route::delete('/usuarios/list/{id}', 'destroy');
     });
 
     // Rutas de categorías

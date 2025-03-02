@@ -90,6 +90,12 @@
                                             <p>Productos</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('usuarios') }}" class="nav-link">
+                                            <i class="fa-solid fa-user-tie"></i>
+                                            <p>Usuarios</p>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="nav-item has-treeview">

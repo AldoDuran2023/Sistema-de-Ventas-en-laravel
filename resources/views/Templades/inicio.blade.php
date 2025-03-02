@@ -111,17 +111,17 @@
                 <div class="card bg-warning text-white h-100">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
-                            <h3 class="display-4 fw-bold">0</h3>
+                            <h3 class="display-4 fw-bold">{{ $totalUsuarios }}</h3>
                             <p class="mb-0">Usuarios Registrados</p>
                         </div>
                         <i class="fa-solid fa-users fa-3x opacity-50"></i>
                     </div>
-                    <div class="card-footer bg-warning-dark d-flex justify-content-between align-items-center">
-                        <a href="#" class="text-white text-decoration-none">
+                    <a href="{{ route('usuarios') }}" class="text-white text-decoration-none">
+                        <div class="card-footer bg-success-dark d-flex justify-content-between align-items-center">
                             Ver detalles
-                        </a>
-                        <i class="fa-solid fa-circle-arrow-right"></i>
-                    </div>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -135,12 +135,12 @@
                         </div>
                         <i class="fa-solid fa-box fa-3x opacity-50"></i>
                     </div>
-                    <div class="card-footer bg-danger-dark d-flex justify-content-between align-items-center">
-                        <a href="{{ route('productos') }}" class="text-white text-decoration-none">
+                    <a href="{{ route('productos') }}" class="text-white text-decoration-none">
+                        <div class="card-footer bg-success-dark d-flex justify-content-between align-items-center">
                             Ver detalles
-                        </a>
-                        <i class="fa-solid fa-circle-arrow-right"></i>
-                    </div>
+                            <i class="fa-solid fa-circle-arrow-right"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
