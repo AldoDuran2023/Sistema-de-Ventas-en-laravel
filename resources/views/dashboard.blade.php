@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistema de ventas')</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
@@ -12,8 +15,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
+        
         body {
             font-family: Arial, sans-serif;
+        }
+
+        .nav-treeview {
+            padding-left: 15px;
+        }
+
+        .nav-treeview .nav-item a {
+            padding-left: 30px; /* Mueve las sublistas más a la derecha */
+        }
+
+        .sidebar {
+            overflow: hidden;
         }
     </style>
 
@@ -51,7 +67,7 @@
         <!-- Sidebar -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <a href="{{ route('home') }}" class="brand-link">
-                <span class="brand-text font-weight-light">Sistema de ventas</span>
+                <span class="brand-text font-weight-light"><i class="fa-solid fa-shop"></i> Sistema de ventas</span>
             </a>
             <div class="sidebar">
                 <nav class="mt-2">
@@ -174,6 +190,22 @@
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+
+        // Marcar el menú activo basado en la URL
+        let currentUrl = window.location.href;
+            $('.nav-item a').each(function () {
+                if (this.href === currentUrl) {
+                    $(this).addClass('active'); // Resaltar el enlace activo
+                    $(this).closest('.has-treeview').addClass('menu-open'); // Asegurar que el menú padre esté abierto
+                    $(this).closest('.nav-treeview').show(); // Mostrar el submenú si es necesario
+                }
+            });
+        });
+
+    </script>
 
     @yield('js')
 </body>
